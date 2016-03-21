@@ -16,7 +16,7 @@ defmodule ComoVaRegistrar do
         send p, {:master_quien, self}
         receive do
             {:master, master_ip}    ->  IO.puts "Master es " <> master_ip
-                                        Node.ping(String.to_atom("mxt@"<>master_ip))
+                                        Node.ping(String.to_atom("como-va-registrar@"<>master_ip))
                                         IO.inspect Node.list
                                         :timer.sleep 2000
             after 1000 ->
