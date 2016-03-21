@@ -1,6 +1,7 @@
 defmodule ComoVaRegistrar do
     def start do
         :net_kernel.start([nodename, :longnames])
+        :erlang.set_cookie(node, :"de-chocolate")
         case Node.ping(String.to_atom("comova@"<>get_ip)) do
             :pang   ->  IO.puts "comova@"<>get_ip<>" no responde"
                         Process.exit(self, :kill)
