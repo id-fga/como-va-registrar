@@ -8,16 +8,21 @@ defmodule ComoVaRegistrar do
         end
         :global.sync
         p = :global.whereis_name(:main)
-        send p, {:master_quien, self}
-        recibir
+        recibir p
     end
 
-    def recibir do
+    def recibir(p) do
+        send p, {:master_quien, self}
         receive do
-            {:master, master_ip}    -> IO.puts "Master es " <> master_ip
+            {:master, master_ip}    ->  IO.puts "Master es " <> master_ip
+                                        Node.ping(String.to_atom("mxt@"<>master_ip))
+                                        IO.inspect Node.list
+                                        :timer.sleep 2000
             after 1000 ->
                 IO.puts "No llego nada"
         end
+        p = :global.whereis_name(:main)
+        recibir p
     end
 
     def nodename do
