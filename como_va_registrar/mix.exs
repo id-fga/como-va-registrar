@@ -14,7 +14,8 @@ defmodule ComoVaRegistrar.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    [applications: [:logger]]
+    [applications: [:logger],
+     mod: {ComoVaRegistrar, []}]
   end
 
   # Dependencies can be Hex packages:
