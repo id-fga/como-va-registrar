@@ -29,10 +29,10 @@ defmodule ComoVaRegistrar.Worker do
 
     def handle_info({:master, master_ip}, state) do
         IO.puts "El nodo maestro esta en #{master_ip}"
-        global_process = String.to_atom("main-"<>master_ip)
 
+        global_process = String.to_atom("main-"<>master_ip)
         p = :global.whereis_name(global_process)
-        send p, {:registrar, "huayra-compartir"}
+        send p, {:traer_lista, self()}
 
         {:noreply, {}}
     end
