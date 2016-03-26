@@ -30,10 +30,11 @@ defmodule ComoVaRegistrar.Worker do
     def handle_info({:master, val}, state) do
         masternode = String.to_atom("comova@"<>val)
         IO.puts "El nodo maestro es #{inspect masternode}"
-        case Node.ping(masternode) do
-            :pong   ->  IO.inspect Node.list
-            :pang   -> :ignore
-        end
+        global_process = String.to_atom("main-"<>get_ip)
+
+        p = :global.whereis_name(global_process)
+        send p, {:registrar, "huayra-compartir"}
+
         {:noreply, {}}
     end
 
