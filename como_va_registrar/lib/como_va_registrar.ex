@@ -28,7 +28,14 @@ defmodule ComoVaRegistrar.Worker do
     end
 
     def handle_info({:master, val}, state) do
-        IO.puts "El nodo maestro es #{inspect val}"
+        masternode = String.to_atom("comova@"<>val)
+        IO.puts "El nodo maestro es #{inspect masternode}"
+        #ret = Node.ping(masternode)
+        #IO.inspect ret
+        case Node.ping(masternode) do
+            :pong   ->  IO.inspect Node.list
+            :pang   -> :ignore
+        end
         {:noreply, {}}
     end
 
