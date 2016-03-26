@@ -27,10 +27,9 @@ defmodule ComoVaRegistrar.Worker do
         {:noreply, {}}
     end
 
-    def handle_info({:master, val}, state) do
-        masternode = String.to_atom("comova@"<>val)
-        IO.puts "El nodo maestro es #{inspect masternode}"
-        global_process = String.to_atom("main-"<>get_ip)
+    def handle_info({:master, master_ip}, state) do
+        IO.puts "El nodo maestro esta en #{master_ip}"
+        global_process = String.to_atom("main-"<>master_ip)
 
         p = :global.whereis_name(global_process)
         send p, {:registrar, "huayra-compartir"}
