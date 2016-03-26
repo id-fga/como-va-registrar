@@ -45,8 +45,8 @@ defmodule ComoVaRegistrar.Worker do
     def send_msg_local(nodo) do
         IO.puts "Hablo con #{nodo}"
         :global.sync
-        #p = :global.whereis_name(:main)
-        #send p, {:master_quien, self}
+        p = :global.whereis_name(:main)
+        send p, {:master_quien, self}
     end
 
     def schedule_work do
