@@ -2,28 +2,52 @@ defmodule ComoVaRegistrar.Worker do
     use GenServer
 
     def start_link do
-        :net_kernel.start([nodename, :longnames])
-        :erlang.set_cookie(node, :"de-chocolate")
         GenServer.start_link(__MODULE__, 0, name: :server_prueba)
     end
 
     def init(inicio) do
+        :net_kernel.start([nodename, :longnames])
+        :erlang.set_cookie(node, :"de-chocolate")
         
-        master_node = String.to_atom("comova@"<>get_ip)
+        schedule_work()
+        {:ok, {}}
+    end
 
-        case Node.ping(master_node) do
-          :pong   ->  {:ok, master_node}
-          :pang   ->  {:ok, master_node, 1000}
+    def handle_info(:work, state) do
+        IO.puts "------------------------------"
+        IO.puts "Loopeando, loopeando"
+
+        local = String.to_atom("comova@"<>get_ip)
+        case Node.ping(local) do
+            :pong   ->  send_msg_local(local)
+            _       -> :ignore
         end
+
+        schedule_work()
+        {:noreply, {}}
     end
 
-    def handle_info(:timeout, state) do
-      IO.puts "TIMEOUT: Reintento a #{inspect state}"
-      case Node.ping(state) do
-        :pong   ->  {:noreply, state}
-        :pang   ->  {:noreply, state, 1000}
-      end
+    def handle_info({:master, val}, state) do
+        IO.puts "El nodo maestro es #{inspect val}"
+        {:noreply, {}}
     end
+
+    def handle_info(_, state) do
+        {:noreply, state}
+    end
+
+    
+    def send_msg_local(nodo) do
+        IO.puts "Hablo con #{nodo}"
+        :global.sync
+        p = :global.whereis_name(:main)
+        send p, {:master_quien, self}
+    end
+
+    def schedule_work do
+        Process.send_after(self(), :work, 1000)
+    end
+
 
     def nodename do
         String.to_atom "como-va-registrar@"<>get_ip
@@ -41,20 +65,26 @@ end
 defmodule ComoVaRegistrar do
   use Application
 
-  # See http://elixir-lang.org/docs/stable/elixir/Application.html
-  # for more information on OTP Applications
-  def start(_type, _args) do
-    import Supervisor.Spec, warn: false
+    def main(argv) do
+        :timer.sleep(:infinity)
+    end
 
-    children = [
-      # Define workers and child supervisors to be supervised
-      worker(ComoVaRegistrar.Worker, []),
-    ]
+    # See http://elixir-lang.org/docs/stable/elixir/Application.html
+    # for more information on OTP Applications
+    def start(_type, _args) do
+        import Supervisor.Spec, warn: false
 
-    # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
-    # for other strategies and supported options
-    opts = [strategy: :one_for_one, name: ComoVaRegistrar.Supervisor]
-    Supervisor.start_link(children, opts)
-  end
+        children = [
+        # Define workers and child supervisors to be supervised
+            worker(ComoVaRegistrar.Worker, []),
+        ]
+
+        # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
+        # for other strategies and supported options
+
+        opts = [strategy: :one_for_one, name: ComoVaRegistrar.Supervisor]
+        Supervisor.start_link(children, opts)
+    end
 
 end
+

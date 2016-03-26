@@ -7,7 +7,12 @@ defmodule ComoVaRegistrar.Mixfile do
      elixir: "~> 1.2",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
+     escript: escript,
      deps: deps]
+  end
+
+  defp escript do
+     [main_module: ComoVaRegistrar]
   end
 
   # Configuration for the OTP application
