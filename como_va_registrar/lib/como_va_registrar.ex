@@ -45,7 +45,9 @@ defmodule ComoVaRegistrar.Worker do
     def send_msg_local(nodo) do
         IO.puts "Hablo con #{nodo}"
         :global.sync
-        p = :global.whereis_name(:main)
+
+        global_process = String.to_atom("main-"<>get_ip)
+        p = :global.whereis_name(global_process)
         send p, {:master_quien, self}
     end
 
