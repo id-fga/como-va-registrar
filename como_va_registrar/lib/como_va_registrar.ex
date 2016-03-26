@@ -27,14 +27,13 @@ defmodule ComoVaRegistrar.Worker do
         {:noreply, {}}
     end
 
-    def handle_info({:master, master_ip}, state) do
-        IO.puts "El nodo maestro esta en #{master_ip}"
-
-        global_process = String.to_atom("main-"<>master_ip)
-        p = :global.whereis_name(global_process)
-        :global.sync
-        send p, {:traer_lista, self()}
-
+    def handle_info({:master, val}, state) do
+        masternode = String.to_atom("comova@"<>val)
+        IO.puts "El nodo maestro es #{inspect masternode}"
+        case Node.ping(masternode) do
+            :pong   ->  IO.inspect Node.list
+            :pang   -> :ignore
+        end
         {:noreply, {}}
     end
 
@@ -58,7 +57,8 @@ defmodule ComoVaRegistrar.Worker do
 
 
     def nodename do
-        String.to_atom "como-va-registrar@"<>get_ip
+        #String.to_atom "como-va-registrar@"<>get_ip
+        String.to_atom "huayra-compartir@"<>get_ip
     end
 
     def get_ip do
