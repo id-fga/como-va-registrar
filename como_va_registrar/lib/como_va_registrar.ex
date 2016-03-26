@@ -32,6 +32,7 @@ defmodule ComoVaRegistrar.Worker do
 
         global_process = String.to_atom("main-"<>master_ip)
         p = :global.whereis_name(global_process)
+        :global.sync
         send p, {:traer_lista, self()}
 
         {:noreply, {}}
