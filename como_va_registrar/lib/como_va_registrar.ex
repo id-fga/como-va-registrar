@@ -30,8 +30,6 @@ defmodule ComoVaRegistrar.Worker do
     def handle_info({:master, val}, state) do
         masternode = String.to_atom("comova@"<>val)
         IO.puts "El nodo maestro es #{inspect masternode}"
-        #ret = Node.ping(masternode)
-        #IO.inspect ret
         case Node.ping(masternode) do
             :pong   ->  IO.inspect Node.list
             :pang   -> :ignore
@@ -47,8 +45,8 @@ defmodule ComoVaRegistrar.Worker do
     def send_msg_local(nodo) do
         IO.puts "Hablo con #{nodo}"
         :global.sync
-        p = :global.whereis_name(:main)
-        send p, {:master_quien, self}
+        #p = :global.whereis_name(:main)
+        #send p, {:master_quien, self}
     end
 
     def schedule_work do
