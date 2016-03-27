@@ -1,6 +1,10 @@
 defmodule ComoVaRegistrar.Worker do
     use GenServer
 
+    defmodule Config do
+        defstruct register_name: "huayra-compartir"
+    end
+
     def start_link do
         GenServer.start_link(__MODULE__, 0, name: :server_prueba)
     end
@@ -36,7 +40,7 @@ defmodule ComoVaRegistrar.Worker do
 
         case Node.ping(masternode) do
             :pong   ->  IO.puts "Le pido la lista a #{inspect master_ip}"
-                        send p, {:traer_lista, self}
+                        send p, {:traer_lista, %Config{}.register_name, self}
             :pang   -> :ignore
         end
 
@@ -64,7 +68,8 @@ defmodule ComoVaRegistrar.Worker do
 
     def nodename do
         #String.to_atom "como-va-registrar@"<>get_ip
-        String.to_atom "huayra-compartir@"<>get_ip
+        rn = %Config{}.register_name
+        String.to_atom rn<>"@"<>get_ip
     end
 
     def get_ip do
