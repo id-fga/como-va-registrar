@@ -27,13 +27,19 @@ defmodule ComoVaRegistrar.Worker do
         {:noreply, {}}
     end
 
-    def handle_info({:master, val}, state) do
-        masternode = String.to_atom("comova@"<>val)
-        IO.puts "El nodo maestro es #{inspect masternode}"
+    def handle_info({:master, master_ip}, state) do
+        IO.puts "El nodo maestro esta en #{inspect master_ip}"
+        masternode = String.to_atom("comova@"<>master_ip)
+
+        global_process = String.to_atom("main-"<>master_ip)
+        p = :global.whereis_name(global_process)
+
         case Node.ping(masternode) do
-            :pong   ->  IO.inspect Node.list
+            :pong   ->  IO.puts "Le pido la lista a #{inspect master_ip}"
+                        send p, {:traer_lista, self}
             :pang   -> :ignore
         end
+
         {:noreply, {}}
     end
 
