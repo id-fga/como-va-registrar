@@ -47,6 +47,11 @@ defmodule ComoVaRegistrar.Worker do
         {:noreply, {}}
     end
 
+    def handle_info({:lista, lista}, state) do
+        IO.puts "Me llega la lista #{inspect lista}"
+        {:noreply, {}}
+    end
+
     def handle_info(_, state) do
         {:noreply, state}
     end
